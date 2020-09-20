@@ -1,1 +1,1 @@
-storybook tutoral
+storybook tutorial

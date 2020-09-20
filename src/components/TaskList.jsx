@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { archiveTask, pinTask } from '../lib/redux';
 import Task from './Task';
 
-const TaskList = ({ loading, tasks, onPinTask, onArchiveTask }) => {
+export const PureTaskList = ({ loading, tasks, onPinTask, onArchiveTask }) => {
 	const events = {
 		onPinTask,
 		onArchiveTask,
@@ -57,7 +59,7 @@ const TaskList = ({ loading, tasks, onPinTask, onArchiveTask }) => {
 	);
 };
 
-TaskList.propTypes = {
+PureTaskList.propTypes = {
 	/** 로딩에 대한 타입 */
 	loading: PropTypes.bool,
 	/** 기존 task의 필요한 값과 동일한 값 */
@@ -68,7 +70,18 @@ TaskList.propTypes = {
 	onArchiveTask: PropTypes.func,
 };
 
-TaskList.defaultProps = {
+PureTaskList.defaultProps = {
 	loading: false,
 };
-export default TaskList;
+
+export default connect(
+	({ tasks }) => ({
+		tasks: tasks.filter(
+			t => t.state === 'TASK_INBOX' || t.state === 'TASK_PINNED'
+		),
+	}),
+	dispatch => ({
+		onArchiveTask: id => dispatch(archiveTask(id)),
+		onPinTask: id => dispatch(pinTask(id)),
+	})
+)(PureTaskList);
